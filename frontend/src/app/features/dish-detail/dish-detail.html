@@ -1,0 +1,20 @@
+<main class="detail">
+  <button type="button" class="back" (click)="goBackToMenu()">{{ i18n.t('detail.back') }}</button>
+  @if (item) {
+    <article class="detail-card">
+      <img [src]="dishImage(item)" [alt]="i18n.dishName(item)" />
+      <div>
+        <p class="eyebrow">{{ i18n.category(item.category) }}</p>
+        <h1>{{ i18n.dishName(item) }}</h1>
+        <strong>{{ item.price.toLocaleString('es-ES', { style: 'currency', currency: 'EUR' }) }}</strong>
+        <p>{{ i18n.dishDescription(item) }}</p>
+        <div class="badges">
+          @for (tag of item.tags; track tag.code) { <span>{{ tag.icon }} {{ i18n.tag(tag) }}</span> }
+        </div>
+        <p class="notice">{{ i18n.t('detail.notice') }}</p>
+      </div>
+    </article>
+  } @else {
+    <p class="state">{{ error || i18n.t('detail.loading') }}</p>
+  }
+</main>

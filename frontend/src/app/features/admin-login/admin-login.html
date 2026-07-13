@@ -1,0 +1,24 @@
+<main class="login-page">
+  <section class="login-panel">
+    <img src="brand/la-casa-nostra-logo.png" [alt]="restaurantName" />
+    <p class="eyebrow">{{ restaurantName }}</p>
+    <h1>Acceso administracion</h1>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" autocomplete="off">
+      <label>
+        Usuario
+        <input type="text" formControlName="username" name="admin-login-user" autocomplete="username" />
+      </label>
+      <label>
+        Contrasena
+        <input type="password" formControlName="password" name="admin-login-password" autocomplete="current-password" />
+      </label>
+
+      @if (error()) {
+        <p class="login-error">{{ error() }}</p>
+      }
+
+      <button type="submit" [disabled]="loading()">{{ loading() ? 'Entrando...' : 'Entrar' }}</button>
+    </form>
+  </section>
+</main>

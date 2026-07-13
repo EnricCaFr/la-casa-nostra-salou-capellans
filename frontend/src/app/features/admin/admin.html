@@ -1,0 +1,323 @@
+<main class="admin">
+  <section class="admin-head">
+    <div>
+      <p class="eyebrow">Panel admin</p>
+      <h1>Gestion de carta</h1>
+      <p>Administra categorias, platos y estado visible de la carta.</p>
+    </div>
+    <button type="button" class="secondary" (click)="logout()">Cerrar sesion</button>
+  </section>
+
+  <section #categoryEditor class="panel">
+    <div class="form-head">
+      <div>
+        <h2>{{ editingCategoryId() ? 'Editar categoria' : 'Nueva categoria' }}</h2>
+        <p>Ordena y activa las secciones de la carta.</p>
+      </div>
+      @if (editingCategoryId()) {
+        <button type="button" class="secondary" (click)="cancelCategoryEdit()" [disabled]="savingCategory()">Cancelar</button>
+      }
+    </div>
+
+    <form [formGroup]="categoryForm" (ngSubmit)="saveCategory()" class="inline-form" autocomplete="off">
+      <section class="translation-editor full">
+        <span class="tag-title">Traducciones de categoria *</span>
+        <div class="translation-tabs">
+          @for (language of languages; track language.code) {
+            <button type="button" [class.active]="activeCategoryLanguage() === language.code" [class.complete]="categoryLanguageComplete(language.code)" (click)="activeCategoryLanguage.set(language.code)">
+              <span class="language-flag" [attr.data-lang]="language.code"></span>
+              <span>{{ languageLabel(language.code) }}</span>
+              @if (!categoryLanguageComplete(language.code)) { <span class="missing-badge">Falta</span> }
+            </button>
+          }
+        </div>
+        <label>
+          Nombre *
+          <input [value]="translationValue(categoryTranslations(), activeCategoryLanguage(), 'name')" (input)="setCategoryTranslation(activeCategoryLanguage(), 'name', $any($event.target).value)" autocomplete="off" />
+        </label>
+        <label>
+          Texto bajo el titulo
+          <textarea [value]="translationValue(categoryTranslations(), activeCategoryLanguage(), 'description')" (input)="setCategoryTranslation(activeCategoryLanguage(), 'description', $any($event.target).value)" autocomplete="off"></textarea>
+        </label>
+      </section>
+      <label>
+        Orden *
+        <input type="number" formControlName="displayOrder" name="admin-category-order" autocomplete="off" />
+      </label>
+      <label class="check">
+        <input type="checkbox" formControlName="active" name="admin-category-active" autocomplete="off" /> Activa
+      </label>
+      <button type="submit" [disabled]="savingCategory()">{{ savingCategory() ? 'Guardando...' : (editingCategoryId() ? 'Guardar categoria' : 'Crear categoria') }}</button>
+    </form>
+
+    <div class="table category-table">
+      @for (category of categories(); track category.id) {
+        <div>
+          <strong>{{ category.name }}</strong>
+          <span>{{ category.description || 'Sin texto bajo el titulo' }}</span>
+          <span>Orden {{ category.displayOrder }}</span>
+          <span class="badge" [class.ok]="category.active" [class.off]="!category.active">{{ category.active ? 'Activa' : 'Inactiva' }}</span>
+          <button type="button" class="secondary" (click)="editCategory(category)">Editar</button>
+          <button type="button" class="danger" (click)="requestDeleteCategory(category)">Eliminar</button>
+        </div>
+      } @empty {
+        <p class="empty">No hay categorias todavia.</p>
+      }
+    </div>
+  </section>
+
+  <section #itemEditor class="panel">
+    <div class="form-head">
+      <div>
+        <h2>{{ editingItemId() ? 'Editar plato' : 'Crear plato' }}</h2>
+        <p>{{ editingItemId() ? 'Estas editando un plato existente. Guarda los cambios o cancela para crear uno nuevo.' : 'Rellena los datos principales del plato y sus alergenos.' }}</p>
+      </div>
+      @if (editingItemId()) {
+        <button type="button" class="secondary" (click)="cancelEdit()" [disabled]="savingItem()">Cancelar</button>
+      }
+    </div>
+
+    <form [formGroup]="itemForm" (ngSubmit)="saveItem()" class="item-form" autocomplete="off">
+      <section class="translation-editor full">
+        <span class="tag-title">Traducciones del plato *</span>
+        <div class="translation-tabs">
+          @for (language of languages; track language.code) {
+            <button type="button" [class.active]="activeItemLanguage() === language.code" [class.complete]="itemLanguageComplete(language.code)" (click)="activeItemLanguage.set(language.code)">
+              <span class="language-flag" [attr.data-lang]="language.code"></span>
+              <span>{{ languageLabel(language.code) }}</span>
+              @if (!itemLanguageComplete(language.code)) { <span class="missing-badge">Falta</span> }
+            </button>
+          }
+        </div>
+        <label>
+          Nombre *
+          <input [value]="translationValue(itemTranslations(), activeItemLanguage(), 'name')" (input)="setItemTranslation(activeItemLanguage(), 'name', $any($event.target).value)" autocomplete="off" />
+        </label>
+        <label>
+          Descripcion *
+          <textarea [value]="translationValue(itemTranslations(), activeItemLanguage(), 'description')" (input)="setItemTranslation(activeItemLanguage(), 'description', $any($event.target).value)" autocomplete="off"></textarea>
+        </label>
+      </section>
+      <label class="category-field">
+        Categoria *
+        <select formControlName="categoryId" name="admin-dish-category" autocomplete="off">
+          @for (category of categories(); track category.id) { <option [value]="category.id">{{ category.name }}</option> }
+        </select>
+      </label>
+      <label class="price-field">
+        Precio final *
+        <input type="number" step="0.01" min="0" placeholder="12.50" formControlName="price" name="admin-dish-price" autocomplete="off" />
+        <span class="hint">{{ itemForm.controls.price.value.toLocaleString('es-ES', { style: 'currency', currency: 'EUR' }) }}</span>
+      </label>
+      <section class="image-picker full">
+        <div>
+          <strong>Imagen del plato</strong>
+          <p>{{ itemForm.controls.imageUrl.value ? 'Imagen seleccionada' : 'Ninguna imagen seleccionada' }}</p>
+        </div>
+        <div class="image-tools">
+          <img [src]="selectedImageUrl()" alt="Previsualizacion de la imagen del plato" />
+          <div>
+            <label class="upload-button">
+              {{ uploadingImage() ? 'Subiendo...' : 'Subir imagen' }}
+              <input type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" (change)="uploadDishImage($event)" [disabled]="uploadingImage()" />
+            </label>
+            @if (itemForm.controls.imageUrl.value) {
+              <button type="button" class="secondary" (click)="removeImage()">Quitar imagen</button>
+            }
+            @if (imageUploadError()) { <p class="error-text">{{ imageUploadError() }}</p> }
+          </div>
+        </div>
+        <div class="media-library">
+          <span>Elegir imagen existente</span>
+          <div>
+            @for (image of mediaImages(); track image.id) {
+              <article class="media-tile" [class.selected]="itemForm.controls.imageAssetId.value === image.id">
+                <button type="button" class="media-select" (click)="selectImage(image)">
+                  <img [src]="mediaImageUrl(image)" [alt]="image.originalFileName" />
+                </button>
+                <button type="button" class="media-delete" (click)="requestDeleteImage(image)">Eliminar</button>
+              </article>
+            } @empty {
+              <p class="hint">Todavia no hay imagenes subidas.</p>
+            }
+          </div>
+        </div>
+      </section>
+      <label>
+        Orden
+        <input type="number" formControlName="displayOrder" name="admin-dish-order" autocomplete="off" />
+      </label>
+      <div class="switches">
+        <label class="check"><input type="checkbox" formControlName="active" name="admin-dish-active" autocomplete="off" /> Plato activo</label>
+        <label class="check"><input type="checkbox" formControlName="highlighted" name="admin-dish-highlighted" autocomplete="off" /> Destacado</label>
+      </div>
+      <div class="tags full">
+        <span class="tag-title">Tags y alergenos seleccionados</span>
+        @for (tag of tags(); track tag.code) {
+          <label [class.selected]="itemForm.controls.tagCodes.value.includes(tag.code)">
+            <input type="checkbox" name="admin-dish-tag" autocomplete="off" [checked]="itemForm.controls.tagCodes.value.includes(tag.code)" (change)="toggleTag(tag.code, $any($event.target).checked)" />
+            {{ tag.label }}
+          </label>
+        }
+        @if (!selectedTagLabels().length) { <p class="hint">Sin tags seleccionados.</p> }
+      </div>
+      <button type="submit" class="primary-action" [disabled]="savingItem()">{{ savingItem() ? 'Guardando...' : (editingItemId() ? 'Guardar cambios' : 'Crear plato') }}</button>
+    </form>
+  </section>
+
+  <section class="panel">
+    <div class="form-head">
+      <div>
+        <h2>Platos</h2>
+        <p>{{ filteredItems().length }} de {{ items().length }} platos.</p>
+      </div>
+      <button type="button" class="secondary" (click)="newItem()">Crear plato</button>
+    </div>
+
+    <div class="item-filters" role="search">
+      <label>
+        Buscar
+        <input
+          type="search"
+          placeholder="Nombre, ingrediente, categoria o alergeno"
+          name="admin-item-search"
+          autocomplete="off"
+          [value]="itemSearch()"
+          (input)="itemSearch.set($any($event.target).value)" />
+      </label>
+      <label>
+        Categoria
+        <select
+          name="admin-item-category-filter"
+          [value]="itemCategoryFilter()"
+          (change)="itemCategoryFilter.set($any($event.target).value)">
+          <option value="">Todas</option>
+          @for (category of categories(); track category.id) {
+            <option [value]="category.id">{{ category.name }}</option>
+          }
+        </select>
+      </label>
+      <label>
+        Estado
+        <select
+          name="admin-item-status-filter"
+          [value]="itemStatusFilter()"
+          (change)="setItemStatusFilter($any($event.target).value)">
+          <option value="all">Todos</option>
+          <option value="active">Activos</option>
+          <option value="inactive">Inactivos</option>
+        </select>
+      </label>
+      <label>
+        Destacado
+        <select
+          name="admin-item-featured-filter"
+          [value]="itemFeaturedFilter()"
+          (change)="setItemFeaturedFilter($any($event.target).value)">
+          <option value="all">Todos</option>
+          <option value="featured">Destacados</option>
+          <option value="normal">Normales</option>
+        </select>
+      </label>
+      <button type="button" class="secondary" (click)="resetItemFilters()" [disabled]="!hasItemFilters()">Limpiar filtros</button>
+    </div>
+
+    @if (loading()) {
+      <p class="empty">Cargando platos...</p>
+    } @else {
+      <div class="table items">
+        @for (item of filteredItems(); track item.id) {
+          <div>
+            <strong>{{ item.name }}</strong>
+            <span>{{ item.category.name }} · {{ item.price.toLocaleString('es-ES', { style: 'currency', currency: 'EUR' }) }}</span>
+            <span>Orden {{ item.displayOrder }}</span>
+            <span class="badge" [class.ok]="item.active" [class.off]="!item.active">{{ item.active ? 'Activo' : 'Inactivo' }}</span>
+            <span class="badge" [class.featured]="item.highlighted">{{ item.highlighted ? 'Destacado' : 'Normal' }}</span>
+            <div class="mini-tags" [class.compact]="item.tags.length <= 3" tabindex="0" aria-label="Tags del plato" (wheel)="scrollTags($event)">
+              @for (tag of item.tags; track tag.code) { <span>{{ tag.name }}</span> }
+            </div>
+            <button type="button" class="secondary" (click)="editItem(item)">Editar</button>
+            <button type="button" class="danger" (click)="requestDeleteItem(item)">Eliminar</button>
+          </div>
+        } @empty {
+          <p class="empty">{{ hasItemFilters() ? 'No hay platos que coincidan con esos filtros.' : 'No hay platos todavia.' }}</p>
+        }
+      </div>
+    }
+  </section>
+
+  <section #tagEditor class="panel">
+    <div class="form-head">
+      <div>
+        <h2>{{ editingTagId() ? 'Editar tag o alergeno' : 'Crear tag o alergeno' }}</h2>
+        <p>Gestiona los alergenos y etiquetas que se pueden asignar a los platos.</p>
+      </div>
+      @if (editingTagId()) {
+        <button type="button" class="secondary" (click)="cancelTagEdit()" [disabled]="savingTag()">Cancelar</button>
+      }
+    </div>
+
+    <form [formGroup]="tagForm" (ngSubmit)="saveTag()" class="inline-form tag-editor" autocomplete="off">
+      <section class="translation-editor full">
+        <span class="tag-title">Traducciones del tag *</span>
+        <div class="translation-tabs">
+          @for (language of languages; track language.code) {
+            <button type="button" [class.active]="activeTagLanguage() === language.code" [class.complete]="tagLanguageComplete(language.code)" (click)="activeTagLanguage.set(language.code)">
+              <span class="language-flag" [attr.data-lang]="language.code"></span>
+              <span>{{ languageLabel(language.code) }}</span>
+              @if (!tagLanguageComplete(language.code)) { <span class="missing-badge">Falta</span> }
+            </button>
+          }
+        </div>
+        <label>
+          Nombre *
+          <input [value]="translationValue(tagTranslations(), activeTagLanguage(), 'name')" (input)="setTagTranslation(activeTagLanguage(), $any($event.target).value)" autocomplete="off" />
+        </label>
+      </section>
+      <label>
+        Icono *
+        <input placeholder="Icono visible" formControlName="icon" name="admin-tag-icon" autocomplete="off" />
+      </label>
+      <label>
+        Tipo *
+        <select formControlName="type" name="admin-tag-type" autocomplete="off">
+          <option value="ALLERGEN">Alergeno</option>
+          <option value="DIET">Dieta</option>
+        </select>
+      </label>
+      <button type="submit" [disabled]="savingTag()">{{ savingTag() ? 'Guardando...' : (editingTagId() ? 'Guardar tag' : 'Crear tag') }}</button>
+    </form>
+
+    <div class="table tag-table">
+      @for (tag of adminTags(); track tag.id) {
+        <div>
+          <strong><span class="tag-icon">{{ tag.icon }}</span>{{ tag.name }}</strong>
+          <span>{{ tag.type === 'ALLERGEN' ? 'Alergeno' : 'Dieta' }}</span>
+          <button type="button" class="secondary" (click)="editTag(tag)">Editar</button>
+          <button type="button" class="danger" (click)="requestDeleteTag(tag)">Eliminar</button>
+        </div>
+      } @empty {
+        <p class="empty">No hay tags todavia.</p>
+      }
+    </div>
+  </section>
+
+  @if (confirmDialog(); as dialog) {
+    <div class="modal-backdrop" role="presentation">
+      <section class="confirm-modal" role="dialog" aria-modal="true" [attr.aria-label]="dialog.title">
+        <h2>{{ dialog.title }}</h2>
+        <p>{{ dialog.message }}</p>
+        <div class="modal-actions">
+          <button type="button" class="secondary" (click)="cancelConfirm()" [disabled]="dialog.busy">Cancelar</button>
+          <button type="button" class="danger" (click)="confirmDelete()" [disabled]="dialog.busy">{{ dialog.busy ? 'Eliminando...' : 'Si, eliminar' }}</button>
+        </div>
+      </section>
+    </div>
+  }
+
+  @if (toast(); as notification) {
+    <aside class="toast" [class.success]="notification.type === 'success'" [class.error]="notification.type === 'error'">
+      {{ notification.message }}
+    </aside>
+  }
+</main>

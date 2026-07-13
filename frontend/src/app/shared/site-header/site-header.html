@@ -1,0 +1,67 @@
+<header class="site-header" [class.is-hidden]="hidden">
+  <div class="header-main">
+    <a routerLink="/" class="brand" [attr.aria-label]="restaurantName">
+      <img [src]="logoUrl" [alt]="restaurantName" class="brand-logo" />
+      <span class="brand-name">{{ restaurantName }}</span>
+    </a>
+    <div class="language-menu language-menu-mobile" [class.open]="languageOpen" aria-label="Idioma">
+      <button
+        type="button"
+        class="language-current"
+        [attr.aria-expanded]="languageOpen"
+        aria-haspopup="true"
+        (click)="languageOpen = !languageOpen">
+        <span class="flag" [attr.data-lang]="currentLanguage()"></span>
+        <span>{{ currentLanguage().toUpperCase() }}</span>
+      </button>
+
+      <div class="language-panel">
+        @for (language of languages; track language.code) {
+          @if (language.code !== currentLanguage()) {
+            <button
+              type="button"
+              [attr.aria-label]="languageLabel(language.code)"
+              [title]="languageLabel(language.code)"
+              (click)="setLanguage(language.code)">
+              <span class="flag" [attr.data-lang]="language.code"></span>
+              <span>{{ languageLabel(language.code) }}</span>
+            </button>
+          }
+        }
+      </div>
+    </div>
+    <button class="menu-toggle" type="button" (click)="open = !open" [attr.aria-label]="i18n.t('nav.openMenu')">☰</button>
+    <nav [class.open]="open">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{ i18n.t('nav.home') }}</a>
+      <a routerLink="/carta" routerLinkActive="active">{{ i18n.t('nav.menu') }}</a>
+      <button type="button" class="nav-link" (click)="goToSchedule()">{{ i18n.t('nav.schedule') }}</button>
+      <a routerLink="/contacto" routerLinkActive="active">{{ i18n.t('nav.contact') }}</a>
+      <div class="language-menu language-menu-desktop" [class.open]="languageOpen" aria-label="Idioma">
+        <button
+          type="button"
+          class="language-current"
+          [attr.aria-expanded]="languageOpen"
+          aria-haspopup="true"
+          (click)="languageOpen = !languageOpen">
+          <span class="flag" [attr.data-lang]="currentLanguage()"></span>
+          <span>{{ currentLanguage().toUpperCase() }}</span>
+        </button>
+
+        <div class="language-panel">
+          @for (language of languages; track language.code) {
+            @if (language.code !== currentLanguage()) {
+              <button
+                type="button"
+                [attr.aria-label]="languageLabel(language.code)"
+                [title]="languageLabel(language.code)"
+                (click)="setLanguage(language.code)">
+                <span class="flag" [attr.data-lang]="language.code"></span>
+                <span>{{ languageLabel(language.code) }}</span>
+              </button>
+            }
+          }
+        </div>
+      </div>
+    </nav>
+  </div>
+</header>

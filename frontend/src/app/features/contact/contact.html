@@ -1,0 +1,31 @@
+<main class="contact">
+  <section>
+    <p class="eyebrow">{{ i18n.t('contact.eyebrow') }}</p>
+    <h1>{{ restaurantName }}</h1>
+    <p>{{ i18n.openingHours(info?.openingHours) }}</p>
+    <p>{{ info?.address || i18n.t('common.defaultAddress') }}</p>
+  </section>
+
+  <section class="contact-card">
+    <h2>{{ i18n.t('contact.info') }}</h2>
+    <dl>
+      <div>
+        <dt>{{ i18n.t('contact.phone') }}</dt>
+        <dd>{{ info?.phone || '+34 877 251 710' }}</dd>
+      </div>
+      <div>
+        <dt>{{ i18n.t('contact.schedule') }}</dt>
+        <dd>{{ i18n.openingHours(info?.openingHours) }}</dd>
+      </div>
+      <div>
+        <dt>{{ i18n.t('contact.address') }}</dt>
+        <dd>{{ info?.address || i18n.t('common.defaultAddress') }}</dd>
+      </div>
+    </dl>
+    <div class="actions">
+      <a [href]="googleMapsUrl" target="_blank" rel="noopener noreferrer" class="primary-link">{{ i18n.t('home.howToArrive') }}</a>
+      <a [href]="'https://wa.me/' + (info?.whatsapp || '34877251710')" class="whatsapp" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+      <a [href]="info?.instagramUrl || 'https://www.instagram.com/casanostra.capellans'" class="instagram" target="_blank" rel="noopener noreferrer">Instagram</a>
+    </div>
+  </section>
+</main>

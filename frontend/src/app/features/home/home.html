@@ -1,0 +1,89 @@
+<main class="home">
+  <section class="hero" [style.--hero-image]="heroImageUrl">
+    <div class="hero-copy">
+      <p class="eyebrow">Salou · Capellans</p>
+      <h1>{{ restaurantName }}</h1>
+      <p class="claim">{{ i18n.t('home.claim') }}</p>
+      <div class="hero-actions">
+        <a routerLink="/carta" class="btn primary">{{ i18n.t('home.viewMenu') }}</a>
+        <a [href]="googleMapsUrl" target="_blank" rel="noopener noreferrer" class="btn text">{{ i18n.t('home.howToArrive') }}</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section intro">
+    <div>
+      <p class="eyebrow">{{ i18n.t('home.aboutEyebrow') }}</p>
+      <h2>{{ i18n.t('home.aboutTitle') }}</h2>
+    </div>
+    <p>{{ i18n.t('home.description') }}</p>
+  </section>
+
+  <section class="section">
+    <div class="section-title">
+      <p class="eyebrow">{{ i18n.t('home.featuredEyebrow') }}</p>
+      <h2>{{ i18n.t('home.featuredTitle') }}</h2>
+    </div>
+    <div class="dish-grid">
+      @for (dish of highlighted; track dish.id) {
+        <a class="dish-card" routerLink="/carta" [queryParams]="{ plato: dish.slug }">
+          <img [src]="dishImage(dish)" [alt]="i18n.dishName(dish)" />
+          <div>
+            <span>{{ i18n.category(dish.category) }}</span>
+            <h3>{{ i18n.dishName(dish) }}</h3>
+            <p>{{ i18n.dishDescription(dish) }}</p>
+            <strong>{{ dish.price.toLocaleString('es-ES', { style: 'currency', currency: 'EUR' }) }}</strong>
+          </div>
+        </a>
+      }
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="section-title">
+      <p class="eyebrow">{{ i18n.t('home.menuEyebrow') }}</p>
+      <h2>{{ i18n.t('home.categoriesTitle') }}</h2>
+    </div>
+    <div class="category-grid">
+      @for (category of categories; track category.id) {
+        <a routerLink="/carta" [queryParams]="{ categoria: category.slug }">{{ i18n.category(category) }}</a>
+      }
+    </div>
+  </section>
+
+  <section class="section experience">
+    <div><h2>{{ i18n.t('home.experienceTitle') }}</h2></div>
+    <ul>
+      <li>{{ i18n.t('home.expTerrace') }}</li>
+      <li>{{ i18n.t('home.expPizza') }}</li>
+      <li>{{ i18n.t('home.expRice') }}</li>
+      <li>{{ i18n.t('home.expOptions') }}</li>
+    </ul>
+  </section>
+
+  <section class="gallery">
+    @for (image of gallery; track image) {
+      <img [src]="image" [alt]="i18n.t('home.galleryAlt')" />
+    }
+  </section>
+
+  <section class="section reviews">
+    <article><p>“{{ i18n.t('home.review1') }}”</p><span>Laura M.</span></article>
+    <article><p>“{{ i18n.t('home.review2') }}”</p><span>Marc R.</span></article>
+    <article><p>“{{ i18n.t('home.review3') }}”</p><span>Sofia G.</span></article>
+  </section>
+
+  <section id="horario" class="section contact-strip">
+    <div>
+      <p class="eyebrow">{{ i18n.t('home.scheduleEyebrow') }}</p>
+      <h2 class="opening-hours">
+        @for (line of openingHoursLines(); track line) {
+          <span>{{ line }}</span>
+        }
+      </h2>
+      <p>{{ info?.address || i18n.t('common.defaultAddress') }}</p>
+    </div>
+    <a [href]="googleMapsUrl" target="_blank" rel="noopener noreferrer" class="btn primary">{{ i18n.t('home.howToArrive') }}</a>
+  </section>
+</main>
+<a routerLink="/carta" class="floating-cta">{{ i18n.t('nav.menu') }}</a>

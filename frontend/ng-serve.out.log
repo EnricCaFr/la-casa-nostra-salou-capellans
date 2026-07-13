@@ -1,0 +1,27 @@
+
+> frontend@0.0.0 start
+> ng serve --host 127.0.0.1 --port 4200
+
+[33m>[39m Building...
+[32m√[39m Building...
+[1mInitial chunk files[22m[2m | [22m[1mNames[22m        [2m | [22m [1mRaw size[22m
+[32mmain.js[39m            [2m | [22m[2mmain[22m         [2m | [22m [36m10.77 kB[39m[2m | [22m
+[32mstyles.css[39m         [2m | [22m[2mstyles[22m       [2m | [22m[36m681 bytes[39m[2m | [22m
+[32mchunk-PZ5AY32C.js[39m  [2m | [22m[2m-[22m            [2m | [22m[36m234 bytes[39m[2m | [22m
+[32mpolyfills.js[39m       [2m | [22m[2mpolyfills[22m    [2m | [22m [36m95 bytes[39m[2m | [22m
+
+[1m [22m                  [2m | [22m[1mInitial total[22m[2m | [22m [1m11.78 kB[22m
+
+[1mLazy chunk files[22m   [2m | [22m[1mNames[22m        [2m | [22m [1mRaw size[22m
+[32mchunk-WBTQ4WGX.js[39m  [2m | [22m[2mmenu[22m         [2m | [22m [36m25.57 kB[39m[2m | [22m
+[32mchunk-VRQESTRW.js[39m  [2m | [22m[2mhome[22m         [2m | [22m [36m25.25 kB[39m[2m | [22m
+[32mchunk-JXLFVPLI.js[39m  [2m | [22m[2madmin[22m        [2m | [22m [36m24.80 kB[39m[2m | [22m
+[32mchunk-F57M5GEW.js[39m  [2m | [22m[2mcontact[22m      [2m | [22m [36m11.69 kB[39m[2m | [22m
+[32mchunk-HNGUQKJT.js[39m  [2m | [22m[2mdish-detail[22m  [2m | [22m  [36m9.53 kB[39m[2m | [22m
+[32mchunk-42RGINDS.js[39m  [2m | [22m[2m-[22m            [2m | [22m  [36m2.72 kB[39m[2m | [22m
+
+Application bundle generation complete. [1.754 seconds] - 2026-07-08T09:34:36.358Z
+
+Watch mode enabled. Watching for file changes...
+NOTE: Raw file sizes do not reflect development server per-request transformations.
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://127.0.0.1:[1m4200[22m/[39m

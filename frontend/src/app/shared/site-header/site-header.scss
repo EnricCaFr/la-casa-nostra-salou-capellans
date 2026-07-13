@@ -293,7 +293,11 @@ nav a:hover,
   }
 
   .brand {
-    flex: 1 1 auto;
+    flex: 0 0 auto;
     gap: 10px;
+  }
+
+  .brand-name {
+    display: none;
   }
 }

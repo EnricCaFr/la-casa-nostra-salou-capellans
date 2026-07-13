@@ -30,6 +30,12 @@ export class SiteHeader {
     this.languageOpen = false;
   }
 
+  closeMenus(): void {
+    this.open = false;
+    this.languageOpen = false;
+    this.setHidden(false);
+  }
+
   languageLabel(language: LanguageCode): string {
     const labels: Record<LanguageCode, string> = {
       es: 'Español',
@@ -46,8 +52,13 @@ export class SiteHeader {
   }
 
   goToSchedule(): void {
-    this.open = false;
-    this.router.navigate(['/']).then(() => window.setTimeout(() => this.scrollToSchedule(), 60));
+    this.closeMenus();
+    this.router.navigate(['/']).then(() => {
+      window.setTimeout(() => {
+        this.setHidden(false);
+        window.requestAnimationFrame(() => this.scrollToSchedule());
+      }, 140);
+    });
   }
 
   @HostListener('window:scroll')
@@ -76,7 +87,7 @@ export class SiteHeader {
     if (!section) return;
 
     const headerHeight = document.querySelector<HTMLElement>('app-site-header .site-header')?.offsetHeight ?? 0;
-    const targetPosition = section.getBoundingClientRect().top + window.scrollY - headerHeight;
+    const targetPosition = section.getBoundingClientRect().top + window.scrollY - headerHeight - 10;
     window.scrollTo({ top: Math.max(targetPosition, 0), behavior: 'smooth' });
   }
 }

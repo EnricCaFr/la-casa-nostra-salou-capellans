@@ -6,8 +6,7 @@ import { I18nService } from './i18n.service';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
-  private readonly baseUrl = 'http://localhost:8080/api';
-  private readonly backendUrl = 'http://localhost:8080';
+  private readonly baseUrl = '/api';
 
   constructor(private readonly http: HttpClient, private readonly i18n: I18nService) {}
 
@@ -103,7 +102,6 @@ export class ApiService {
 
   imageSrc(url?: string | null): string {
     if (!url) return 'dishes/placeholder.svg';
-    if (url.startsWith('/uploads/')) return `${this.backendUrl}${url}`;
     return url;
   }
 

@@ -8,7 +8,7 @@ const USER_KEY = 'la-casa-nostra-admin-user';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly baseUrl = 'http://localhost:8080/api';
+  private readonly baseUrl = '/api';
   private readonly tokenSignal = signal<string | null>(localStorage.getItem(TOKEN_KEY));
   private readonly userSignal = signal<string | null>(localStorage.getItem(USER_KEY));
 

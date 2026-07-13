@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.LinkedHashMap;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -38,6 +40,7 @@ public class TranslationService {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Cacheable(cacheNames = "translations", key = "#entityType + ':' + #entityId + ':' + #fieldName + ':' + #language")
     public synchronized String translate(String entityType, Long entityId, String fieldName, String sourceText, String language) {
         String lang = normalizeLanguage(language);
         if (sourceText == null || sourceText.isBlank() || SOURCE_LANGUAGE.equals(lang) || !enabled) return sourceText;
@@ -78,6 +81,7 @@ public class TranslationService {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @CacheEvict(cacheNames = "translations", allEntries = true)
     public void saveTranslations(String entityType, Long entityId, Map<String, TranslationDto> translations, boolean saveDescription) {
         for (String language : SUPPORTED_LANGUAGES) {
             TranslationDto translation = translations.get(language);
